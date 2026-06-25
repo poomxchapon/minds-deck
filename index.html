@@ -70,6 +70,13 @@
   .dots a:hover{background:var(--c);transform:scale(1.35)}
   .hint{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;color:var(--dim);z-index:10;animation:bob 2.2s ease-in-out infinite}
   @keyframes bob{50%{transform:translateX(-50%) translateY(-6px)}}
+  /* slide-change reveal */
+  .reveal{opacity:0;transform:translateY(34px) scale(.97);filter:blur(6px);
+    transition:opacity .62s cubic-bezier(.2,.75,.2,1),transform .62s cubic-bezier(.2,.75,.2,1),filter .62s ease;will-change:opacity,transform,filter}
+  .reveal.show{opacity:1;transform:none;filter:none}
+  .reveal.shot{transform:translateY(40px) scale(.94)}
+  .num.reveal,.foot.reveal{transform:translateY(0) scale(1);filter:none;transition:opacity .8s ease}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1!important;transform:none!important;filter:none!important}}
 </style>
 </head>
 <body>
@@ -273,8 +280,18 @@
     if(e.key==='ArrowUp'||e.key==='PageUp'){ e.preventDefault(); i=Math.max(0,i-1); secs[i].scrollIntoView(); }
   });
   document.querySelectorAll('.dots a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();document.querySelector(a.getAttribute('href')).scrollIntoView();}));
-  const io=new IntersectionObserver(es=>es.forEach(x=>{ if(x.isIntersecting){ x.target.style.opacity=1; x.target.style.transform='none'; }}),{threshold:.2});
-  secs.forEach(s=>{ s.style.transition='opacity .7s ease,transform .7s ease'; s.style.opacity=.15; s.style.transform='translateY(26px)'; io.observe(s); });
+
+  // ---- staggered reveal animation on each slide change ----
+  const SEL='.kicker,h1,h2,.lead,.shot,.tag,.pt,.f,.r,.step,.arrow,.anode,.acon,.num,.foot';
+  secs.forEach(s=>{
+    const items=[...s.querySelectorAll(SEL)].filter(el=>!el.closest('.pt,.step')||el.matches('.pt,.step')); // animate cards as a unit
+    s._items=items.length?items:[...s.children];
+    s._items.forEach(el=>el.classList.add('reveal'));
+  });
+  function play(s){ s._items.forEach((el,k)=>{ el.classList.remove('show'); void el.offsetWidth; el.style.transitionDelay=(k*70)+'ms'; requestAnimationFrame(()=>el.classList.add('show')); }); }
+  function reset(s){ s._items.forEach(el=>{ el.classList.remove('show'); el.style.transitionDelay='0ms'; }); }
+  const io=new IntersectionObserver(es=>es.forEach(x=>{ x.isIntersecting? play(x.target) : reset(x.target); }),{threshold:.45});
+  secs.forEach(s=>io.observe(s));
 </script>
 </body>
 </html>
