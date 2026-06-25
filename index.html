@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MINDS — Multimodal Intelligent Non-contact Depression Screening</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0b16; --ink:#eef1fb; --muted:#9aa3c4; --dim:#5e6488;
+    --line:rgba(255,255,255,.10); --card:rgba(255,255,255,.04);
+    --v:#8b5cf6; --c:#38bdf8; --p:#f472b6; --y:#fbbf24; --g:#34d399;
+    --mono:'Space Grotesk',monospace; --sans:'Prompt',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);overflow-x:hidden}
+  .deck{height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory}
+  section{min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;
+    padding:7vh 8vw;position:relative;overflow:hidden}
+  .orb{position:fixed;width:62vmax;height:62vmax;border-radius:50%;filter:blur(80px);opacity:.26;z-index:-1;
+    background:conic-gradient(from 0deg,var(--v),var(--c),var(--g),var(--y),var(--p),var(--v));
+    animation:spin 30s linear infinite;top:-12vmax;right:-14vmax;pointer-events:none}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .grain{position:fixed;inset:0;z-index:-1;background:radial-gradient(circle at 25% 15%,rgba(139,92,246,.10),transparent 60%),radial-gradient(circle at 82% 85%,rgba(56,189,248,.09),transparent 55%)}
+  .kicker{font-family:var(--mono);font-size:13px;letter-spacing:.34em;text-transform:uppercase;color:var(--c);margin-bottom:18px}
+  h1{font-size:clamp(54px,11vw,150px);font-weight:900;line-height:.92;letter-spacing:-.03em}
+  h2{font-size:clamp(28px,4.6vw,60px);font-weight:800;line-height:1.04;letter-spacing:-.015em;margin-bottom:6px}
+  .grad{background:linear-gradient(100deg,var(--v),var(--c) 45%,var(--p));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lead{font-size:clamp(16px,1.7vw,21px);color:var(--muted);max-width:720px;line-height:1.62;margin-top:16px}
+  .num{position:absolute;top:5vh;right:8vw;font-family:var(--mono);font-size:12px;color:var(--dim);letter-spacing:.22em}
+  .tag{display:inline-block;font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line);
+    border-radius:999px;padding:7px 15px;margin:5px 8px 0 0;background:var(--card)}
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:54px;align-items:center}
+  .split.wide-l{grid-template-columns:1.15fr .85fr}
+  @media(max-width:900px){.split,.split.wide-l{grid-template-columns:1fr;gap:26px}}
+  .shot{border-radius:20px;width:100%;display:block;border:1px solid var(--line);box-shadow:0 34px 90px rgba(0,0,0,.55)}
+  .hero-bg{position:absolute;inset:0;z-index:-1;background-size:cover;background-position:center;opacity:.30}
+  .hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,11,22,.35),rgba(10,11,22,.55) 60%,var(--bg))}
+  /* clean list, no icons */
+  .rows{margin-top:26px;display:grid;gap:0;max-width:760px}
+  .rows .r{display:grid;grid-template-columns:230px 1fr;gap:18px;padding:13px 0;border-top:1px solid var(--line);font-size:15px}
+  .rows .r:last-child{border-bottom:1px solid var(--line)}
+  .rows .r b{font-weight:700;color:var(--ink)} .rows .r span{color:var(--muted)}
+  @media(max-width:560px){.rows .r{grid-template-columns:1fr;gap:2px}}
+  .feat{margin-top:24px;display:grid;gap:0;max-width:760px}
+  .feat .f{padding:14px 0 14px 20px;border-left:2px solid var(--c);margin-bottom:12px}
+  .feat .f:nth-child(2){border-color:var(--v)} .feat .f:nth-child(3){border-color:var(--p)}
+  .feat .f:nth-child(4){border-color:var(--g)} .feat .f:nth-child(5){border-color:var(--y)}
+  .feat .f b{font-size:16px} .feat .f span{display:block;color:var(--muted);font-size:14px;margin-top:2px;line-height:1.5}
+  .pts{margin-top:26px;display:grid;gap:22px;max-width:780px}
+  .pts .pt{display:grid;grid-template-columns:46px 1fr;gap:18px;align-items:start}
+  .pts .pt .k{font-family:var(--mono);font-size:26px;font-weight:700;color:transparent;background:linear-gradient(135deg,var(--v),var(--c));-webkit-background-clip:text;background-clip:text}
+  .pts .pt h3{font-size:19px;margin-bottom:3px} .pts .pt p{font-size:14.5px;color:var(--muted);line-height:1.55}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;margin-top:30px;align-items:stretch}
+  .step{flex:1;min-width:140px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 15px}
+  .step .s{font-family:var(--mono);font-size:13px;color:var(--c)} .step h4{font-size:15px;margin:8px 0 4px} .step p{font-size:12.5px;color:var(--muted);line-height:1.45}
+  .arrow{align-self:center;color:var(--dim);font-family:var(--mono)}
+  @media(max-width:820px){.arrow{transform:rotate(90deg)}}
+  .arch{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:34px;justify-content:center}
+  .acol{display:flex;flex-direction:column;gap:9px}
+  .anode{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 16px;font-size:13.5px;text-align:center;min-width:150px}
+  .anode b{display:block;font-size:11px;color:var(--c);font-family:var(--mono);margin-bottom:2px;letter-spacing:.06em}
+  .abox{background:linear-gradient(135deg,rgba(139,92,246,.24),rgba(56,189,248,.16));border:1px solid rgba(139,92,246,.42)}
+  .acon{color:var(--dim);font-family:var(--mono);font-size:18px}
+  .foot{position:absolute;bottom:4vh;left:8vw;font-family:var(--mono);font-size:12px;color:var(--dim);letter-spacing:.16em}
+  .dots{position:fixed;right:22px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:11px;z-index:10}
+  .dots a{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.2);transition:.2s;display:block}
+  .dots a:hover{background:var(--c);transform:scale(1.35)}
+  .hint{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;color:var(--dim);z-index:10;animation:bob 2.2s ease-in-out infinite}
+  @keyframes bob{50%{transform:translateX(-50%) translateY(-6px)}}
+</style>
+</head>
+<body>
+<div class="orb"></div><div class="grain"></div>
+<nav class="dots">
+  <a href="#s1"></a><a href="#s2"></a><a href="#s3"></a><a href="#s4"></a><a href="#s5"></a>
+  <a href="#s6"></a><a href="#s7"></a><a href="#s8"></a><a href="#s9"></a><a href="#s10"></a>
+</nav>
+<div class="hint">scroll ↓ / arrow keys</div>
+
+<div class="deck" id="deck">
+
+  <!-- 1 TITLE -->
+  <section id="s1">
+    <div class="hero-bg" style="background-image:url('./hf_hero.jpg')"></div>
+    <div class="kicker">ACMod · CAMT, Chiang Mai University</div>
+    <h1><span class="grad">MINDS</span></h1>
+    <h2 style="margin-top:14px;font-weight:600;max-width:1000px">Multimodal Intelligent Non-contact Depression Screening</h2>
+    <p class="lead">From Facial Expression to Mind-Reading — a contactless multimodal AI kiosk that lets a person sit down and be screened for depression in minutes, with no operator and no wearables.</p>
+    <div style="margin-top:24px">
+      <span class="tag">Contactless</span><span class="tag">Self-service</span><span class="tag">Face · Voice · Language · Cardiac · Temperature</span>
+    </div>
+    <div class="foot">PROPOSAL DRAFT · 2026</div>
+  </section>
+
+  <!-- 2 PROBLEM -->
+  <section id="s2">
+    <div class="num">01 — PROBLEM</div>
+    <div class="kicker">Why screening fails</div>
+    <h2>Depression is common,<br><span class="grad">but quietly missed.</span></h2>
+    <div class="pts">
+      <div class="pt"><div class="k">01</div><div><h3>Self-report only</h3><p>PHQ-9 captures just what a person chooses to disclose at one moment — recall bias and social desirability hide the rest.</p></div></div>
+      <div class="pt"><div class="k">02</div><div><h3>The masked smile</h3><p>People — especially in Thai culture — smile to hide distress, so facial reading alone is unreliable.</p></div></div>
+      <div class="pt"><div class="k">03</div><div><h3>Access &amp; stigma</h3><p>Too few clinicians, long waits, and the discomfort of asking for help mean many are never screened at all.</p></div></div>
+    </div>
+  </section>
+
+  <!-- 3 IDEA -->
+  <section id="s3">
+    <div class="num">02 — THE IDEA</div>
+    <div class="split wide-l">
+      <div>
+        <div class="kicker">A station that does the work</div>
+        <h2>Sit down.<br><span class="grad">Just talk.</span></h2>
+        <p class="lead">MINDS is a self-service kiosk in a clinic. A person sits, talks with a warm AI doctor for 5–10 minutes, and the system silently reads multiple channels — then hands a clinician a clear summary.</p>
+        <div style="margin-top:18px"><span class="tag">No operator</span><span class="tag">No wearables</span><span class="tag">Screening, not diagnosis</span></div>
+      </div>
+      <img class="shot" src="./hf_room_avatar.jpg" alt="MINDS kiosk with AI doctor">
+    </div>
+  </section>
+
+  <!-- 4 HARDWARE -->
+  <section id="s4">
+    <div class="num">03 — HARDWARE</div>
+    <div class="split">
+      <div>
+        <div class="kicker">What's inside the box</div>
+        <h2>One enclosure,<br><span class="grad">five senses.</span></h2>
+        <div class="rows">
+          <div class="r"><b>Touch display</b><span>Guided UI &amp; the AI doctor</span></div>
+          <div class="r"><b>Camera</b><span>Face · expression · presence</span></div>
+          <div class="r"><b>Microphone + input jack</b><span>Directional array, wired fallback</span></div>
+          <div class="r"><b>mmWave radar</b><span>Contactless heart &amp; breathing rate</span></div>
+          <div class="r"><b>Thermal sensor</b><span>Body-temperature vitals</span></div>
+          <div class="r"><b>Speaker · Mini-PC · Internet</b><span>Voice output, on-box compute, secure sync</span></div>
+        </div>
+      </div>
+      <img class="shot" src="./hf_sensors.jpg" alt="Kiosk sensor bezel">
+    </div>
+  </section>
+
+  <!-- 5 SIGNALS -->
+  <section id="s5">
+    <div class="num">04 — SIGNALS</div>
+    <div class="split">
+      <img class="shot" src="./hf_multimodal.jpg" alt="Multimodal sensing">
+      <div>
+        <div class="kicker">Multimodal fusion</div>
+        <h2>No single signal<br><span class="grad">is enough.</span></h2>
+        <div class="feat">
+          <div class="f"><b>Face</b><span>Expressivity, blink, head motion, genuine (Duchenne) smile</span></div>
+          <div class="f"><b>Voice</b><span>Pitch range, energy, pauses, speech rate (prosody)</span></div>
+          <div class="f"><b>Language</b><span>Negative words, first-person pronouns, risk cues</span></div>
+          <div class="f"><b>Cardiac</b><span>Heart &amp; breathing rate via radar — contactless</span></div>
+          <div class="f"><b>Temperature</b><span>Body-temp vitals (exploratory marker)</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 FLOW -->
+  <section id="s6">
+    <div class="num">05 — FLOW</div>
+    <div class="kicker">Fully autonomous</div>
+    <h2>From walking in <span class="grad">to a result.</span></h2>
+    <div class="flow">
+      <div class="step"><div class="s">01</div><h4>Detect</h4><p>Camera senses a person; the screen wakes.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="s">02</div><h4>Consent + form</h4><p>Agree, pick language, enter basic info.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="s">03</div><h4>Position</h4><p>UI guides seating so face &amp; radar lock in.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="s">04</div><h4>Converse</h4><p>~5 AI questions; signals captured silently.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="s">05</div><h4>Result</h4><p>Summary to clinician; risk → instant alert + hotline.</p></div>
+    </div>
+    <p class="lead" style="margin-top:28px">Handled edge cases: noisy rooms (pre-session noise check + directional mic), multiple people, mid-session exit, accessibility, and shared-device privacy.</p>
+  </section>
+
+  <!-- 7 THAI SMILE -->
+  <section id="s7">
+    <div class="num">06 — DIFFERENTIATOR</div>
+    <div class="split">
+      <div>
+        <div class="kicker">Built for the Thai context</div>
+        <h2>When a smile<br><span class="grad">isn't happiness.</span></h2>
+        <p class="lead">Thai people often smile to mask emotion. MINDS down-weights the facial channel and anchors its read on <b style="color:var(--ink)">voice tone and language</b> — flagging when a smile may be hiding sadness. This cultural calibration is the core research contribution.</p>
+      </div>
+      <img class="shot" src="./hf_masking.jpg" alt="A masked smile">
+    </div>
+  </section>
+
+  <!-- 8 NOVELTY -->
+  <section id="s8">
+    <div class="num">07 — NOVELTY</div>
+    <div class="kicker">What's new</div>
+    <h2>Why MINDS <span class="grad">stands out.</span></h2>
+    <div class="pts">
+      <div class="pt"><div class="k">01</div><div><h3>Fully contactless</h3><p>Heart, breathing &amp; temperature with no touch and no wearable.</p></div></div>
+      <div class="pt"><div class="k">02</div><div><h3>Autonomous self-service</h3><p>Detects, guides, screens and resets — with no operator.</p></div></div>
+      <div class="pt"><div class="k">03</div><div><h3>Thai-calibrated fusion</h3><p>The masked-smile problem handled explicitly in the model.</p></div></div>
+      <div class="pt"><div class="k">04</div><div><h3>Continuity with ACMod</h3><p>Extends the funded mmWave + T2DM-remission framework into a deployable station.</p></div></div>
+    </div>
+  </section>
+
+  <!-- 9 ARCHITECTURE -->
+  <section id="s9">
+    <div class="num">08 — ARCHITECTURE</div>
+    <div class="kicker">System design</div>
+    <h2>Sensors → <span class="grad">fusion</span> → clinician.</h2>
+    <div class="arch">
+      <div class="acol">
+        <div class="anode"><b>VISION</b>Camera → face</div>
+        <div class="anode"><b>AUDIO</b>Mic → prosody</div>
+        <div class="anode"><b>TEXT</b>Speech → language</div>
+        <div class="anode"><b>RADAR</b>mmWave → HR / BR</div>
+        <div class="anode"><b>THERMAL</b>Sensor → temp</div>
+      </div>
+      <div class="acon">→</div>
+      <div class="anode abox" style="max-width:200px"><b>FUSION</b>Multimodal AI<br>MM-LLM + Thai-smile weighting</div>
+      <div class="acon">→</div>
+      <div class="acol">
+        <div class="anode abox"><b>OUTPUT</b>Screening summary<br>band · ~PHQ score</div>
+        <div class="anode"><b>SAFETY</b>Risk → alert + 1323</div>
+        <div class="anode"><b>DASHBOARD</b>Clinician review</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 NEXT -->
+  <section id="s10">
+    <div class="num">09 — NEXT</div>
+    <div class="kicker">From prototype to evidence</div>
+    <h2>What's <span class="grad">next.</span></h2>
+    <div class="pts" style="max-width:900px">
+      <div class="pt"><div class="k">01</div><div><h3>Pilot study</h3><p>Deploy in a clinic; validate against PHQ-9 + clinician rating; report feasibility &amp; acceptability.</p></div></div>
+      <div class="pt"><div class="k">02</div><div><h3>Sensor integration</h3><p>Swap webcam rPPG for the mmWave radar; time-sync every channel inside the box.</p></div></div>
+      <div class="pt"><div class="k">03</div><div><h3>Ethics &amp; data</h3><p>IRB approval, consent on a shared device, on-box vs. cloud data governance.</p></div></div>
+    </div>
+    <p class="lead" style="margin-top:30px"><b style="color:var(--ink)">MINDS</b> — From Facial Expression to Mind-Reading. A calmer, kinder front door to mental-health care.</p>
+    <div class="foot">ACMod · CAMT Chiang Mai University · 2026</div>
+  </section>
+
+</div>
+<script>
+  const secs=[...document.querySelectorAll('section')]; let i=0;
+  const deck=document.getElementById('deck');
+  deck.addEventListener('scroll',()=>{ i=Math.round(deck.scrollTop/window.innerHeight); },{passive:true});
+  addEventListener('keydown',e=>{
+    if(e.key==='ArrowDown'||e.key==='PageDown'||e.key===' '){ e.preventDefault(); i=Math.min(secs.length-1,i+1); secs[i].scrollIntoView(); }
+    if(e.key==='ArrowUp'||e.key==='PageUp'){ e.preventDefault(); i=Math.max(0,i-1); secs[i].scrollIntoView(); }
+  });
+  document.querySelectorAll('.dots a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();document.querySelector(a.getAttribute('href')).scrollIntoView();}));
+  const io=new IntersectionObserver(es=>es.forEach(x=>{ if(x.isIntersecting){ x.target.style.opacity=1; x.target.style.transform='none'; }}),{threshold:.2});
+  secs.forEach(s=>{ s.style.transition='opacity .7s ease,transform .7s ease'; s.style.opacity=.15; s.style.transform='translateY(26px)'; io.observe(s); });
+</script>
+</body>
+</html>
